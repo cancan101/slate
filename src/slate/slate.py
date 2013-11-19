@@ -1,9 +1,8 @@
-from StringIO import StringIO
+from cStringIO import StringIO
 
 from pdfminer.pdfparser import PDFParser
 from pdfminer.pdfinterp import PDFResourceManager
 from pdfminer.pdfinterp import PDFPageInterpreter as PI
-from pdfminer.pdfdevice import PDFDevice
 from pdfminer.converter import TextConverter
 try:
     from pdfminer.pdfparser import PDFDocument
@@ -11,6 +10,7 @@ except ImportError:
     from pdfminer.pdfdocument import PDFDocument
 
 from pdfminer.pdfpage import PDFPage
+from pdfminer.layout import LAParams
 
 import utils
 
@@ -29,8 +29,8 @@ class PDFPageInterpreter(PI):
             ctm = (0,1,-1,0, y1,-x0)
         else:
             ctm = (1,0,0,1, -x0,-y0)
-        self.device.outfp.seek(0)
-        self.device.outfp.buf = ''
+#         self.device.outfp.seek(0)
+#         self.device.outfp.buf = ''
         self.device.begin_page(page, ctm)
         self.render_contents(page.resources, page.contents, ctm=ctm)
         self.device.end_page(page)
@@ -42,7 +42,8 @@ class PDF(list):
         self.doc = PDFDocument(self.parser, password)
         if self.doc.is_extractable:
             self.resmgr = PDFResourceManager()
-            self.device = TextConverter(self.resmgr, outfp=StringIO())
+            laparams = LAParams()
+            self.device = TextConverter(self.resmgr, outfp=StringIO(), laparams=laparams)
             self.interpreter = PDFPageInterpreter(
                self.resmgr, self.device)
             for page in PDFPage.create_pages(self.doc):
