@@ -40,6 +40,12 @@ class PDF(list):
     def __init__(self, file, password='', just_text=1):
         self.parser = PDFParser(file)
         self.doc = PDFDocument(self.parser, password)
+
+        #Make cleanup work:
+        self.device = None
+        self.interpreter = None
+        self.resmgr = None
+
         if self.doc.is_extractable:
             self.resmgr = PDFResourceManager()
             laparams = LAParams()
