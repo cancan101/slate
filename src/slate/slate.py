@@ -37,7 +37,7 @@ class PDFPageInterpreter(PI):
         return self.device.outfp.getvalue()
 
 class PDF(list):
-    def __init__(self, file, password='', just_text=1):
+    def __init__(self, file, password='', just_text=1, check_extractable=True):
         self.parser = PDFParser(file)
         self.doc = PDFDocument(self.parser, password)
 
@@ -46,7 +46,7 @@ class PDF(list):
         self.interpreter = None
         self.resmgr = None
 
-        if self.doc.is_extractable:
+        if not check_extractable or self.doc.is_extractable:
             self.resmgr = PDFResourceManager()
             laparams = LAParams()
             self.device = TextConverter(self.resmgr, outfp=StringIO(), laparams=laparams)
